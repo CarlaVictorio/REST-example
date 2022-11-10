@@ -1,9 +1,9 @@
 package edu.upc.dsa.services;
 
 
-import edu.upc.dsa.TracksManager;
-import edu.upc.dsa.TracksManagerImpl;
-import edu.upc.dsa.models.Track;
+import edu.upc.dsa.PartidasManager;
+import edu.upc.dsa.PartidasManagerImpl;
+import edu.upc.dsa.models.Juego;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,17 +13,16 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
 @Api(value = "/tracks", description = "Endpoint to Track Service")
 @Path("/tracks")
-public class TracksService {
+public class PartidasService {
 
-    private TracksManager tm;
+    private PartidasManager tm; //Gestor de la capa Integration
 
-    public TracksService() {
-        this.tm = TracksManagerImpl.getInstance();
+    public PartidasService() {
+        this.tm = PartidasManagerImpl.getInstance();
         if (tm.size()==0) {
             this.tm.addTrack("La Barbacoa", "Georgie Dann");
             this.tm.addTrack("Despacito", "Luis Fonsi");
@@ -33,18 +32,18 @@ public class TracksService {
 
     }
 
-    @GET
+    @GET //es el seu mètode associat
     @ApiOperation(value = "get all Track", notes = "asdasd")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response = Track.class, responseContainer="List"),
+            @ApiResponse(code = 201, message = "Successful", response = Juego.class, responseContainer="List"),
     })
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTracks() {
 
-        List<Track> tracks = this.tm.findAll();
+        List<Juego> tracks = this.tm.findAll();
 
-        GenericEntity<List<Track>> entity = new GenericEntity<List<Track>>(tracks) {};
+        GenericEntity<List<Juego>> entity = new GenericEntity<List<Juego>>(tracks) {};
         return Response.status(201).entity(entity).build()  ;
 
     }
@@ -52,15 +51,16 @@ public class TracksService {
     @GET
     @ApiOperation(value = "get a Track", notes = "asdasd")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response = Track.class),
+            @ApiResponse(code = 201, message = "Successful", response = Juego.class),
             @ApiResponse(code = 404, message = "Track not found")
     })
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTrack(@PathParam("id") String id) {
-        Track t = this.tm.getTrack(id);
-        if (t == null) return Response.status(404).build();
-        else  return Response.status(201).entity(t).build();
+        Juego t = this.tm.getTrack(id); //TM es un gestor, està a la capa Integration
+        if (t == null) return Response.status(404).build(); //si no hi ha track
+        else  return Response.status(201).entity(t).build(); // si hi ha track, empaqueto i envio amb un 201,
+                                                            // monta la frase directament amb la resposta en JSON
     }
 
     @DELETE
@@ -71,7 +71,7 @@ public class TracksService {
     })
     @Path("/{id}")
     public Response deleteTrack(@PathParam("id") String id) {
-        Track t = this.tm.getTrack(id);
+        Juego t = this.tm.getTrack(id);
         if (t == null) return Response.status(404).build();
         else this.tm.deleteTrack(id);
         return Response.status(201).build();
@@ -84,9 +84,9 @@ public class TracksService {
             @ApiResponse(code = 404, message = "Track not found")
     })
     @Path("/")
-    public Response updateTrack(Track track) {
+    public Response updateTrack(Juego track) {
 
-        Track t = this.tm.updateTrack(track);
+        Juego t = this.tm.updateTrack(track); //crida a la capa d'abaix per actualitzar el Track
 
         if (t == null) return Response.status(404).build();
 
@@ -98,14 +98,14 @@ public class TracksService {
     @POST
     @ApiOperation(value = "create a new Track", notes = "asdasd")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response=Track.class),
-            @ApiResponse(code = 500, message = "Validation Error")
+            @ApiResponse(code = 201, message = "Successful", response= Juego.class), //tot bé
+            @ApiResponse(code = 500, message = "Validation Error") //error de validació
 
     })
 
-    @Path("/")
+    @Path("/")  //arriba una instancia/objecte buit, es crea automàticamente, no arriba un JSON
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response newTrack(Track track) {
+    public Response newTrack(Juego track) {
 
         if (track.getSinger()==null || track.getTitle()==null)  return Response.status(500).entity(track).build();
         this.tm.addTrack(track);
