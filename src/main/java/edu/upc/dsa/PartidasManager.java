@@ -24,7 +24,7 @@ public interface PartidasManager {
     public void addJuego (String idJuego, String descripcion, int numNiveles);
     public void addPartida(String idPartida, String idJuego, String idUsuario, int nivelActual, int puntosAcumulados, boolean finalizada );
     //poner nivel = 1 y puntos = 50, tener en cuenta si está en una partida o no
-    public String consultarNivelActual(String idUsuario);
+    public int consultarNivelActual(String idUsuario);
     //devolver el nivel actual y la partida que está jugando
     public int consultarPuntosActual(String idUsuario);
     //devolver los puntos de la partida en curso

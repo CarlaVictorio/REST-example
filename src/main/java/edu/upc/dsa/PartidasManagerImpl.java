@@ -56,7 +56,6 @@ public class PartidasManagerImpl implements PartidasManager {
     public Usuario devolverUsuario (String idUsuario){
         int i = 0;
         boolean encontrado = false;
-        boolean libre = true;
         Usuario usuario = null;
         while ((!encontrado) && (i < listaUsuarios.size())) {
             usuario = listaUsuarios.get(i);
@@ -68,6 +67,25 @@ public class PartidasManagerImpl implements PartidasManager {
         }
         if(encontrado){
             return usuario;
+        }
+        else
+            return null;
+    }
+    public Partida devolverPartida (String idPartida){
+        int i = 0;
+        boolean encontrado = false;
+        boolean libre = true;
+        Partida partida = null;
+        while ((!encontrado) && (i < listaPartidas.size())) {
+            partida = listaPartidas.get(i);
+
+            if (partida.getIdPartida().equals(idPartida)) {
+                encontrado = true;
+            }
+            i++;
+        }
+        if(encontrado){
+            return partida;
         }
         else
             return null;
@@ -90,29 +108,31 @@ public class PartidasManagerImpl implements PartidasManager {
             Partida partida = new Partida(idPartida, idJuego, idUsuario, 1, 50, false);
         }
     }
-    public String consultarNivelActual(String idUsuario){
-        int i = 0;
-        boolean encontrado = false;
-        Usuario usuario = null;
-        String idP = null;
-        int nivel;
-        Partida partida;
-        while ((!encontrado) && (i < listaUsuarios.size())) {
-            usuario = listaUsuarios.get(i);
-
-            if (usuario.getIdUsuario().equals(idUsuario)) {
-                encontrado = true;
-            }
-            i++;
-        }
-        if(encontrado){
-             idP = usuario.getIdPartidaActual();
-             nivel =
-        }
-        else
+    public int consultarNivelActual(String idUsuario){
+        Usuario usuario = devolverUsuario(idUsuario);
+        String idP = usuario.getIdPartidaActual();
+        Partida partida = devolverPartida(idP);
+        int nivel = partida.getNivelActual();
+        return nivel;
     }
 
-    public void pasarNivel(String idUsuario, int puntos, String fecha){
+    public int consultarPuntosActual(String idUsuario)
+    {
+        Usuario usuario = devolverUsuario(idUsuario);
+        String idP = usuario.getIdPartidaActual();
+        Partida partida = devolverPartida(idP);
+        int puntos = partida.getPuntosAcumulados();
+        return puntos;
+    }
+
+    public void pasarNivel(String idUsuario, int puntos, String fecha)
+    {
+        Usuario usuario = devolverUsuario(idUsuario);
+        String idP = usuario.getIdPartidaActual();
+        Partida partida = devolverPartida(idP);
+        int nivel = partida.getNivelActual();
+        //if esta en el ultimo nivel
+        partida.setNivelActual(nivel+1);
 
     }
 
